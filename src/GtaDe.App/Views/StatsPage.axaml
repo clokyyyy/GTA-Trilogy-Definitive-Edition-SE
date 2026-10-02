@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.StatsPage"
+             x:DataType="vm:StatsPageViewModel">
+
+  <UserControl.Resources>
+    <DataTemplate x:Key="EditableStatTemplate" DataType="vm:EditableStat">
+      <Grid ColumnDefinitions="*,12,140" Margin="0,0,0,10">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="{Binding Label}" />
+          <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding Hint}"
+                     IsVisible="{Binding HasHint}" TextWrapping="Wrap" />
+        </StackPanel>
+        <NumericUpDown Grid.Column="2" Value="{Binding Value}" FormatString="0"
+                       Minimum="0" Maximum="999999999" Increment="1" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Vehicle side missions" />
+          <TextBlock Classes="Subtle" Text="{Binding ProgressSummary}" />
+          <ItemsControl ItemsSource="{Binding VehicleMissions}"
+                        ItemTemplate="{StaticResource EditableStatTemplate}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Criminal record" />
+          <ItemsControl ItemsSource="{Binding Criminal}"
+                        ItemTemplate="{StaticResource EditableStatTemplate}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Driving records" />
+          <ItemsControl ItemsSource="{Binding Driving}"
+                        ItemTemplate="{StaticResource EditableStatTemplate}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Recorded figures" />
+          <TextBlock Classes="Subtle"
+                     Text="Shown for reference. These are tallies the game keeps as you play; the editor does not write them." />
+          <ItemsControl ItemsSource="{Binding ReadOnly}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:StatRow">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,7">
+                  <TextBlock Grid.Column="0" Classes="Muted" Text="{Binding Label}" />
+                  <TextBlock Grid.Column="1" Classes="Mono" Text="{Binding Value}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.WorldPage"
+             x:DataType="vm:WorldPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Clock" />
+          <Grid ColumnDefinitions="*,16,*">
+            <StackPanel Grid.Column="0" Spacing="6">
+              <TextBlock Classes="Muted" Text="Hour" />
+              <NumericUpDown Value="{Binding Hour}" Minimum="0" Maximum="23" Increment="1"
+                             FormatString="00" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="6">
+              <TextBlock Classes="Muted" Text="Minute" />
+              <NumericUpDown Value="{Binding Minute}" Minimum="0" Maximum="59" Increment="1"
+                             FormatString="00" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Weather" />
+          <ComboBox ItemsSource="{Binding WeatherOptions}" SelectedItem="{Binding Weather}"
+                    HorizontalAlignment="Stretch" />
+          <CheckBox Content="Lock the weather to this setting" IsChecked="{Binding ForceWeather}" />
+          <TextBlock Classes="Subtle"
+                     Text="Setting the weather writes both the previous and current slots so the sky does not blend from whatever was there before." />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Island" />
+          <ComboBox ItemsSource="{Binding IslandOptions}" SelectedItem="{Binding Island}"
+                    HorizontalAlignment="Stretch" />
+          <TextBlock Classes="Subtle"
+                     Text="This is the island the save loads on. It does not move the player — the game places you at the last restart point, so change it only alongside the matching story progress." />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Inset">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="Muted" FontSize="11.5" Text="Camera position recorded in the save" />
+          <TextBlock Classes="Mono" Text="{Binding CameraPosition}" />
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

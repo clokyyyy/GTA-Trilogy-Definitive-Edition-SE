@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SideMissionsPage"
+             x:DataType="vm:ActivityTabsPageViewModel">
+
+  <Grid ColumnDefinitions="230,*">
+
+    <!-- Activity subpages -->
+    <Border Grid.Column="0" Padding="20,20,10,20">
+      <ListBox ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}"
+               Background="Transparent" BorderThickness="0">
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="vm:ActivityTab">
+            <StackPanel Spacing="5" Margin="2,6,10,8">
+              <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+              <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding Summary}" />
+              <ProgressBar Value="{Binding Progress}" Maximum="100" Height="3" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+
+    <Grid Grid.Column="1" RowDefinitions="Auto,*" Margin="10,20,30,20">
+
+      <Border Grid.Row="0" Classes="Card" Margin="0,0,0,16">
+        <StackPanel Spacing="12">
+          <ContentControl Content="{Binding SelectedTab}">
+            <ContentControl.ContentTemplate>
+              <DataTemplate DataType="vm:ActivityTab">
+                <StackPanel Spacing="12">
+                  <TextBlock Classes="SectionTitle" Text="{Binding Name}" />
+                  <TextBlock Classes="Subtle" TextWrapping="Wrap" Text="{Binding Description}" />
+
+                  <ItemsControl ItemsSource="{Binding Counters}" IsVisible="{Binding HasCounters}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="vm:StatRow">
+                        <Border Classes="Inset" Margin="0,0,10,10" MinWidth="150">
+                          <StackPanel Spacing="3">
+                            <TextBlock Classes="Muted" FontSize="11" Text="{Binding Label}" />
+                            <TextBlock Classes="Mono" FontSize="15" Text="{Binding Value}" />
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </DataTemplate>
+            </ContentControl.ContentTemplate>
+          </ContentControl>
+
+          <Button Content="Complete everything on this tab" HorizontalAlignment="Left"
+                  IsVisible="{Binding SelectedTab.HasItems, FallbackValue=False}"
+                  Command="{Binding CompleteSelectedCommand}" />
+        </StackPanel>
+      </Border>
+
+      <ScrollViewer Grid.Row="1">
+        <ItemsControl ItemsSource="{Binding SelectedTab.Items}" Margin="0,0,14,0">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <c:CardGrid MinColumnWidth="380" Spacing="8" MaxColumns="3" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:ToggleItem">
+              <Border Classes="Card" Padding="14,10">
+                <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Stretch">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                    <TextBlock Classes="Subtle" FontSize="12" Text="{Binding Detail}"
+                               IsVisible="{Binding HasDetail}" TextWrapping="Wrap" />
+                    <TextBlock Classes="Mono" FontSize="10.5" Opacity="0.65" Text="{Binding Flag}" />
+                  </StackPanel>
+                </CheckBox>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+    </Grid>
+  </Grid>
+</UserControl>

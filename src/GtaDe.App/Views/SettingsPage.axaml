@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SettingsPage"
+             x:DataType="vm:SettingsPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="General" />
+          <StackPanel Spacing="6">
+            <TextBlock Classes="Muted" Text="Theme" />
+            <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}"
+                      HorizontalAlignment="Stretch" />
+          </StackPanel>
+          <CheckBox IsChecked="{Binding ReopenLastSave}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Reopen the last save for each game" />
+              <TextBlock Classes="Muted" FontSize="11.5" TextWrapping="Wrap"
+                         Text="On start-up and when you switch games, the save you last opened for that game loads by itself." />
+            </StackPanel>
+          </CheckBox>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Safety" />
+          <CheckBox IsChecked="{Binding CreateBackups}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Keep a .bak copy of the original save" />
+              <TextBlock Classes="Muted" FontSize="11.5"
+                         Text="Strongly recommended. The copy is made before anything is written." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding WarnWhenGameRunning}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Warn me if the game is running" />
+              <TextBlock Classes="Muted" FontSize="11.5" TextWrapping="Wrap"
+                         Text="{Binding GameRunningHint}" />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox Content="Show the raw script globals page" IsChecked="{Binding ShowAdvancedTools}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="10">
+          <TextBlock Classes="SectionTitle" Text="Save folder" />
+          <TextBlock Classes="Mono" FontSize="12" Text="{Binding SaveFolder}" TextWrapping="Wrap" />
+          <Button Content="Open folder" HorizontalAlignment="Left"
+                  Command="{Binding OpenSaveFolderCommand}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Inset">
+        <StackPanel Spacing="10">
+          <TextBlock Text="About this editor" FontWeight="SemiBold" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="Every edit is applied in place to a copy of the original file, so anything the editor does not understand is written back untouched and an unmodified save round-trips byte for byte." />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="{Binding GameNotes}" />
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>
