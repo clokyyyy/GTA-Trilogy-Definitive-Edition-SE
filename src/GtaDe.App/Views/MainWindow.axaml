@@ -1,0 +1,287 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GtaDe.App.ViewModels"
+        xmlns:views="using:GtaDe.App.Views"
+        x:Class="GtaDe.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Width="1240" Height="820"
+        MinWidth="980" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Icon="{Binding SelectedGame.WindowIcon}"
+        Title="{Binding WindowTitle}">
+
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:DashboardPageViewModel">
+      <views:DashboardPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:PlayerPageViewModel">
+      <views:PlayerPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:ToggleGroupsPageViewModel">
+      <views:MissionsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:ActivityTabsPageViewModel">
+      <views:SideMissionsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:CollectiblesPageViewModel">
+      <views:CollectiblesPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:StatsPageViewModel">
+      <views:StatsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:WorldPageViewModel">
+      <views:WorldPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:GaragesPageViewModel">
+      <views:GaragesPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:GlobalsPageViewModel">
+      <views:GlobalsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:ResearchPageViewModel">
+      <views:ResearchPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:VcDashboardPageViewModel">
+      <views:VcDashboardPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:VcPlayerPageViewModel">
+      <views:VcPlayerPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:VcStatsPageViewModel">
+      <views:VcStatsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:VcWorldPageViewModel">
+      <views:VcWorldPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SaDashboardPageViewModel">
+      <views:SaDashboardPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SaPlayerPageViewModel">
+      <views:SaPlayerPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SaStatsPageViewModel">
+      <views:SaStatsPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SaCollectiblesPageViewModel">
+      <views:SaCollectiblesPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SaWorldPageViewModel">
+      <views:SaWorldPage />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SettingsPageViewModel">
+      <views:SettingsPage />
+    </DataTemplate>
+  </Window.DataTemplates>
+
+  <Grid ColumnDefinitions="248,*" RowDefinitions="*,Auto">
+
+    <!-- Navigation rail -->
+    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+            Background="{DynamicResource SidebarBackgroundBrush}"
+            BorderBrush="{DynamicResource PanelBorderBrush}"
+            BorderThickness="0,0,1,0">
+      <DockPanel LastChildFill="True">
+
+        <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8" Spacing="10">
+          <ItemsControl ItemsSource="{Binding Games}" HorizontalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="10" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:GameChoice">
+                <Button Classes="GameChip" Classes.Selected="{Binding IsSelected}"
+                        ToolTip.Tip="{Binding ToolTip}"
+                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectGameCommand}"
+                        CommandParameter="{Binding}">
+                  <Image Source="{Binding Profile.Icon}" Width="34" Height="34" />
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <Image Source="{Binding SelectedGame.Logo}" Height="78" Stretch="Uniform"
+                 HorizontalAlignment="Center" />
+
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <TextBlock Text="SAVE EDITOR" FontSize="10.5" LetterSpacing="2.4" FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Text="Coming soon" Classes="Muted" FontSize="11" HorizontalAlignment="Center"
+                       IsVisible="{Binding SelectedGame.IsComingSoon}" />
+          </StackPanel>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Margin="14,10,14,16" Spacing="8"
+                    IsVisible="{Binding SelectedGame.IsSupported}">
+          <Button Classes="Accent" Content="Open save…" HorizontalAlignment="Stretch"
+                  Command="{Binding OpenCommand}" />
+          <Grid ColumnDefinitions="*,6,*,6,*">
+            <Button Grid.Column="0" Content="Save" Command="{Binding SaveCommand}"
+                    HorizontalAlignment="Stretch" Padding="6,8" />
+            <Button Grid.Column="2" Content="Revert" Command="{Binding RevertCommand}"
+                    HorizontalAlignment="Stretch" Padding="6,8" />
+            <Button Grid.Column="4" Content="Copy…" Command="{Binding SaveAsCommand}"
+                    ToolTip.Tip="Save a copy under a new name"
+                    HorizontalAlignment="Stretch" Padding="6,8" />
+          </Grid>
+        </StackPanel>
+
+        <ScrollViewer IsVisible="{Binding SelectedGame.IsSupported}">
+          <ItemsControl Margin="10,0" ItemsSource="{Binding NavGroups}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:NavGroup">
+                <StackPanel Margin="0,0,0,14">
+                  <TextBlock Text="{Binding Name}" Classes="Muted" FontSize="10.5"
+                             LetterSpacing="1.4" Margin="12,8,0,6" />
+                  <ItemsControl ItemsSource="{Binding Pages}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="vm:PageViewModel">
+                        <Button Classes="Nav"
+                                Classes.Selected="{Binding IsSelected}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                IsEnabled="{Binding IsAvailable}"
+                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NavigateCommand}"
+                                CommandParameter="{Binding}">
+                          <Grid ColumnDefinitions="Auto,12,*">
+                            <Path Grid.Column="0" Width="18" Height="18"
+                                  Stretch="Uniform"
+                                  Data="{Binding Icon}"
+                                  Fill="{Binding $parent[Button].Foreground}" />
+                            <TextBlock Grid.Column="2" Text="{Binding Title}" VerticalAlignment="Center" />
+                          </Grid>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+      </DockPanel>
+    </Border>
+
+    <!-- Page host -->
+    <Grid Grid.Row="0" Grid.Column="1" RowDefinitions="Auto,Auto,*">
+
+      <Border Grid.Row="0" Padding="30,22,30,16"
+              IsVisible="{Binding ShowEditor}"
+              BorderBrush="{DynamicResource PanelBorderBrush}"
+              BorderThickness="0,0,0,1">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Grid.Column="0" Spacing="5">
+            <TextBlock Classes="PageTitle" Text="{Binding CurrentPage.Title}" />
+            <TextBlock Classes="Subtle" Text="{Binding CurrentPage.Description}" MaxWidth="760"
+                       HorizontalAlignment="Left" />
+          </StackPanel>
+          <Border Grid.Column="1" VerticalAlignment="Top" Margin="12,0,0,0"
+                  IsVisible="{Binding IsModified}"
+                  Background="{DynamicResource AccentSoftBrush}"
+                  CornerRadius="{DynamicResource ControlRadius}"
+                  Padding="12,6">
+            <TextBlock Text="Unsaved changes" FontSize="12" FontWeight="SemiBold"
+                       Foreground="{DynamicResource AccentBrush}" />
+          </Border>
+        </Grid>
+      </Border>
+
+      <Border Grid.Row="1" Padding="30,12"
+              IsVisible="{Binding FileChangedOnDisk}"
+              Background="{DynamicResource SurfaceRaisedBrush}"
+              BorderBrush="{DynamicResource DangerBrush}"
+              BorderThickness="0,0,0,2">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap"
+                     Foreground="{DynamicResource DangerBrush}"
+                     Text="This save changed on disk after you opened it. If the game is running it has written its own copy — saving here will overwrite it." />
+          <Button Grid.Column="1" Content="Reload from disk" Margin="16,0,0,0"
+                  Command="{Binding ReloadCommand}" />
+        </Grid>
+      </Border>
+
+      <Panel Grid.Row="2">
+        <ContentControl Content="{Binding CurrentPage}"
+                        IsVisible="{Binding ShowEditor}" />
+
+        <!-- Landing: the selected game's artwork, then either "open a save" or "coming soon" -->
+        <ScrollViewer IsVisible="{Binding !ShowEditor}">
+          <StackPanel Margin="30,28" Spacing="20">
+            <Border Classes="HeroBanner" Height="280">
+              <Panel>
+                <Panel HorizontalAlignment="Right" MaxWidth="1200" ClipToBounds="True">
+                  <Panel.OpacityMask>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                      <GradientStop Offset="0" Color="#00000000" />
+                      <GradientStop Offset="0.3" Color="#FF000000" />
+                    </LinearGradientBrush>
+                  </Panel.OpacityMask>
+                  <Image Source="{Binding SelectedGame.Banner}" Stretch="UniformToFill"
+                         HorizontalAlignment="Right" VerticalAlignment="Center" />
+                </Panel>
+                <Border>
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                      <GradientStop Offset="0" Color="#F00B0D12" />
+                      <GradientStop Offset="0.4" Color="#A00B0D12" />
+                      <GradientStop Offset="0.72" Color="#000B0D12" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
+                <Image Source="{Binding SelectedGame.Logo}" Height="200" Stretch="Uniform"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="34,0,0,0" />
+              </Panel>
+            </Border>
+
+            <Border Classes="Card" Padding="26,22" IsVisible="{Binding ShowLanding}">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="8" Margin="0,0,24,0">
+                  <TextBlock Text="No save loaded" FontSize="20" FontWeight="SemiBold" />
+                  <TextBlock Classes="Subtle" Text="{Binding SelectedGame.Tagline}" TextWrapping="Wrap" />
+                  <TextBlock Classes="Subtle" Text="{Binding LandingHint}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="Accent" Content="Open save…" VerticalAlignment="Center"
+                        Padding="22,10" Command="{Binding OpenCommand}" />
+              </Grid>
+            </Border>
+
+            <Border Classes="Card" Padding="26,22" IsVisible="{Binding ShowComingSoon}">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <TextBlock Text="{Binding SelectedGame.Name}" FontSize="20" FontWeight="SemiBold" />
+                  <Border Background="{DynamicResource AccentSoftBrush}" CornerRadius="4" Padding="8,3"
+                          VerticalAlignment="Center">
+                    <TextBlock Text="COMING SOON" FontSize="10" FontWeight="Bold" LetterSpacing="1.4"
+                               Foreground="{DynamicResource AccentBrush}" />
+                  </Border>
+                </StackPanel>
+                <TextBlock Classes="Subtle" Text="{Binding SelectedGame.Tagline}" TextWrapping="Wrap" />
+                <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                           Text="The three remasters share the same save container and integrity seal, but each game has its own mission script and data blocks that need mapping before they can be edited safely. GTA III is fully supported today — pick it from the switcher at the top left." />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Panel>
+
+    </Grid>
+
+    <!-- Status bar -->
+    <Border Grid.Row="1" Grid.Column="1" Padding="30,10"
+            BorderBrush="{DynamicResource PanelBorderBrush}"
+            BorderThickness="0,1,0,0">
+      <TextBlock Text="{Binding StatusMessage}" FontSize="12" TextTrimming="CharacterEllipsis">
+        <TextBlock.Styles>
+          <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+          </Style>
+        </TextBlock.Styles>
+      </TextBlock>
+    </Border>
+
+  </Grid>
+</Window>

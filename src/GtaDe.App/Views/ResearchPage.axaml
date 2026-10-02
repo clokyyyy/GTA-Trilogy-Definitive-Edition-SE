@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             x:Class="GtaDe.App.Views.ResearchPage"
+             x:DataType="vm:ResearchPageViewModel">
+
+  <Grid RowDefinitions="Auto,*" Margin="30,20">
+
+    <StackPanel Grid.Row="0" Spacing="14" Margin="0,0,0,14">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="SectionTitle" Text="Compare two saves" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap" Text="{Binding ComparisonSummary}" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Classes="Accent" Content="Pick a save to compare…" Command="{Binding CompareCommand}" />
+            <Button Content="Export symbol table to CSV" Command="{Binding ExportSymbolsCommand}" />
+          </StackPanel>
+          <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding SymbolSummary}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="SectionTitle" Text="Inspect an offset" />
+          <Grid ColumnDefinitions="200,10,Auto,*">
+            <TextBox Grid.Column="0" Text="{Binding InspectOffset}" Watermark="0x1A4C or 6732" />
+            <Button Grid.Column="2" Content="Inspect" Command="{Binding InspectCommand}" />
+          </Grid>
+          <Border Classes="Inset" IsVisible="{Binding InspectResult, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock Classes="Mono" FontSize="12" Text="{Binding InspectResult}" />
+          </Border>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+
+    <Border Grid.Row="1" Classes="Card" Padding="0">
+      <DockPanel LastChildFill="True">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="90,60,110,2*,1.2*,1.2*" Margin="14,12,20,10">
+          <TextBlock Grid.Column="0" Classes="Muted" FontSize="11.5" Text="Offset" />
+          <TextBlock Grid.Column="1" Classes="Muted" FontSize="11.5" Text="Len" />
+          <TextBlock Grid.Column="2" Classes="Muted" FontSize="11.5" Text="Region" />
+          <TextBlock Grid.Column="3" Classes="Muted" FontSize="11.5" Text="Variable" />
+          <TextBlock Grid.Column="4" Classes="Muted" FontSize="11.5" Text="Before" />
+          <TextBlock Grid.Column="5" Classes="Muted" FontSize="11.5" Text="After" />
+        </Grid>
+        <ListBox ItemsSource="{Binding Differences}" Background="Transparent" BorderThickness="0">
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="vm:DifferenceRow">
+              <Grid ColumnDefinitions="90,60,110,2*,1.2*,1.2*">
+                <TextBlock Grid.Column="0" Classes="Mono" Text="{Binding Offset}" />
+                <TextBlock Grid.Column="1" Classes="Mono" Text="{Binding Length}" />
+                <TextBlock Grid.Column="2" Classes="Muted" FontSize="12" Text="{Binding Region}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="3" Classes="Mono" Text="{Binding Detail}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="4" Classes="Mono" Text="{Binding Before}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="5" Classes="Mono" Text="{Binding After}"
+                           Foreground="{DynamicResource AccentBrush}"
+                           TextTrimming="CharacterEllipsis" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+  </Grid>
+</UserControl>

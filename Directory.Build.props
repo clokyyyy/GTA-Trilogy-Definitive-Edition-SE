@@ -1,0 +1,20 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <AvaloniaVersion>11.3.22</AvaloniaVersion>
+    <!-- Debug info lives inside each DLL/EXE, so builds and publishes leave no loose .pdb files. -->
+    <DebugType>embedded</DebugType>
+    <Version>1.0.0</Version>
+    <Product>GTA DE Save Editor</Product>
+    <Copyright>Copyright (c) 2025 GTA DE Save Editor contributors. MIT License.</Copyright>
+    <Deterministic>true</Deterministic>
+    <!-- Strip absolute local paths from embedded PDBs and compiler output. -->
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+  </PropertyGroup>
+
+</Project>

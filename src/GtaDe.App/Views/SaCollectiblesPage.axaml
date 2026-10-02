@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SaCollectiblesPage"
+             x:DataType="vm:SaCollectiblesPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+    <Border Classes="Card">
+      <StackPanel Spacing="10">
+        <TextBlock Classes="SectionTitle" Text="Collect everything" />
+        <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                   Text="Sprays all 100 tags and fills in 50 snapshots, horseshoes and oysters. Each total also sets the reward flag, so the bonus weapons and stat boosts appear when the game next loads the save." />
+        <Button Content="Collect everything" Command="{Binding CollectEverythingCommand}" />
+      </StackPanel>
+    </Border>
+    <ItemsControl ItemsSource="{Binding Groups}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Spacing="20" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="vm:NumberGroup">
+          <Border Classes="Card">
+            <StackPanel Spacing="14">
+              <TextBlock Classes="SectionTitle" Text="{Binding Name}" />
+              <TextBlock Classes="Subtle" Text="{Binding Note}" IsVisible="{Binding HasNote}" TextWrapping="Wrap" />
+              <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:EditableNumber">
+                    <Grid ColumnDefinitions="*,12,180" Margin="0,0,0,10">
+                      <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{Binding Label}" />
+                        <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding Hint}"
+                                   IsVisible="{Binding HasHint}" TextWrapping="Wrap" />
+                      </StackPanel>
+                      <NumericUpDown Grid.Column="2" Value="{Binding Value}" FormatString="{Binding Format}"
+                                     Minimum="0" Maximum="999999999" Increment="{Binding Increment}" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

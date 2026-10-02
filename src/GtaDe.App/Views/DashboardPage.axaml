@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.DashboardPage"
+             x:DataType="vm:DashboardPageViewModel">
+
+  <ScrollViewer>
+    <StackPanel Margin="30,24" Spacing="20">
+
+      <Border Classes="HeroBanner" Height="200">
+        <Panel>
+          <!-- Capped near the art's own aspect so a wide window does not crop the faces; the left edge fades into the banner. -->
+          <Panel HorizontalAlignment="Right" MaxWidth="860" ClipToBounds="True">
+            <Panel.OpacityMask>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                <GradientStop Offset="0" Color="#00000000" />
+                <GradientStop Offset="0.3" Color="#FF000000" />
+              </LinearGradientBrush>
+            </Panel.OpacityMask>
+            <Image Source="{Binding Game.Banner}" Stretch="UniformToFill"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+          </Panel>
+          <Border>
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                <GradientStop Offset="0" Color="#F00B0D12" />
+                <GradientStop Offset="0.38" Color="#B00B0D12" />
+                <GradientStop Offset="0.7" Color="#000B0D12" />
+              </LinearGradientBrush>
+            </Border.Background>
+          </Border>
+          <StackPanel Orientation="Horizontal" Spacing="22" Margin="26,20" VerticalAlignment="Center">
+            <Image Source="{Binding Game.Logo}" Height="140" Stretch="Uniform" />
+            <StackPanel VerticalAlignment="Center" Spacing="6" MaxWidth="360">
+              <TextBlock Text="{Binding Game.Name}" FontSize="22" FontWeight="Bold" Foreground="White"
+                         TextWrapping="Wrap" />
+              <TextBlock Text="{Binding Headline}" FontSize="13" Foreground="#E6FFFFFF"
+                         TextWrapping="Wrap" />
+              <Border Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="8,3"
+                      HorizontalAlignment="Left" Margin="0,6,0,0">
+                <TextBlock Text="DEFINITIVE EDITION" FontSize="10" FontWeight="Bold" LetterSpacing="1.6"
+                           Foreground="#14161B" />
+              </Border>
+            </StackPanel>
+          </StackPanel>
+        </Panel>
+      </Border>
+
+      <Border Classes="Card" Background="{DynamicResource AccentSoftBrush}"
+              IsVisible="{Binding !SealWasValid}">
+        <StackPanel Spacing="6">
+          <TextBlock Text="This file's integrity value did not match" FontWeight="SemiBold" />
+          <TextBlock Classes="Subtle"
+                     Text="The save still loaded, but it was probably written by another editor. It will be resealed correctly the next time you save it here." />
+        </StackPanel>
+      </Border>
+
+      <ItemsControl ItemsSource="{Binding Tiles}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <c:CardGrid MinColumnWidth="190" MaxColumns="6" Spacing="16" Balanced="True" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:SummaryTile">
+            <Border Classes="Card" Height="132">
+              <StackPanel Spacing="6">
+                <TextBlock Text="{Binding Label}" Classes="Muted" FontSize="11.5" />
+                <TextBlock Classes="Metric" Text="{Binding Value}" />
+                <TextBlock Classes="Subtle" Text="{Binding Caption}" FontSize="12" />
+                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="4"
+                             Margin="0,4,0,0"
+                             IsVisible="{Binding ShowProgress}" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="This save" />
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Classes="Muted" Text="Last mission passed" Margin="0,0,0,8" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LastMission}" Margin="0,0,0,8" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Classes="Muted" Text="Saved" Margin="0,0,0,8" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SavedAt}" Margin="0,0,0,8" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Classes="Muted" Text="Island" Margin="0,0,0,8" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Island}" Margin="0,0,0,8" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Classes="Muted" Text="Game clock" Margin="0,0,0,8" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding GameClock}" Margin="0,0,0,8" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Classes="Muted" Text="Time played" Margin="0,0,0,8" />
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PlayTime}" Margin="0,0,0,8" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Classes="Muted" Text="File" />
+            <TextBlock Grid.Row="5" Grid.Column="1" Classes="Mono" Text="{Binding FilePath}"
+                       TextWrapping="Wrap" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="SectionTitle" Text="What this editor cannot change" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="GTA III: Definitive Edition does not store the player's health, armour or weapons in the save file — the game gives them back from the mission script when you load. Any editor that claims to set them is writing to bytes the game ignores." />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

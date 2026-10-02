@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.CollectiblesPage"
+             x:DataType="vm:CollectiblesPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Hidden packages" />
+
+          <Grid ColumnDefinitions="*,16,Auto,8,Auto">
+            <StackPanel Grid.Column="0" Spacing="8" VerticalAlignment="Center">
+              <Slider Minimum="0" Maximum="{Binding PackageTotal}" TickFrequency="1"
+                      IsSnapToTickEnabled="True" Value="{Binding Packages}" />
+              <ProgressBar Value="{Binding PackageProgress}" Maximum="100" Height="4" />
+            </StackPanel>
+            <NumericUpDown Grid.Column="2" Width="120" Minimum="0"
+                           Maximum="{Binding PackageTotal}" Increment="1" FormatString="0"
+                           Value="{Binding Packages}" />
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8">
+              <Button Content="All" Command="{Binding CollectAllCommand}" />
+              <Button Content="None" Command="{Binding CollectNoneCommand}" />
+            </StackPanel>
+          </Grid>
+
+          <TextBlock Classes="Subtle" Text="{Binding BonusSummary}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Island progress flags" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="These gate the story. Turning one on without the matching missions can leave the map open but the contacts silent, so prefer completing the missions on the Story missions page." />
+          <ItemsControl ItemsSource="{Binding IslandFlags}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:ToggleItem">
+                <CheckBox IsChecked="{Binding IsComplete}" Margin="0,3">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Classes="Mono" FontSize="10.5" Opacity="0.65" Text="{Binding Flag}" />
+                  </StackPanel>
+                </CheckBox>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SaPlayerPage"
+             x:DataType="vm:SaPlayerPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Money" />
+          <Grid ColumnDefinitions="220,12,Auto">
+            <NumericUpDown Grid.Column="0" Value="{Binding Money}" FormatString="N0"
+                           Minimum="0" Maximum="999999999" Increment="1000" />
+            <Button Grid.Column="2" Content="Give $1,000,000" Command="{Binding GiveMillionCommand}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Health and armour" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="Current values are what CJ has when the save loads. Paramedic level 12 raises maximum health, Vigilante level 12 raises maximum armour to 150. Maximum health also follows the Max health stat on the Stats page." />
+          <Grid ColumnDefinitions="*,12,160" RowDefinitions="Auto,10,Auto,10,Auto,10,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Health" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding Health}" FormatString="0" IsEnabled="{Binding PedAvailable}"
+                           Minimum="0" Maximum="1000" Increment="10" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Armour" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Row="2" Grid.Column="2" Value="{Binding Armour}" FormatString="0" IsEnabled="{Binding PedAvailable}"
+                           Minimum="0" Maximum="1000" Increment="10" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Maximum health" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Row="4" Grid.Column="2" Value="{Binding MaxHealth}" FormatString="0"
+                           Minimum="0" Maximum="255" Increment="5" />
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Maximum armour" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Row="6" Grid.Column="2" Value="{Binding MaxArmour}" FormatString="0"
+                           Minimum="0" Maximum="255" Increment="5" />
+          </Grid>
+          <Button Content="Max out health and armour" Command="{Binding MaxOutCommand}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Weapons" />
+          <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding Position, StringFormat='Saved position: {0}'}" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="One weapon per slot, as in the game. Picking a weapon with no ammo fills in its default amount." />
+          <TextBlock Classes="Muted" Text="The player character was not found in this save, so weapons cannot be edited."
+                     IsVisible="{Binding !PedAvailable}" TextWrapping="Wrap" />
+          <ItemsControl ItemsSource="{Binding Weapons}" IsEnabled="{Binding PedAvailable}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:SaWeaponSlotRow">
+                <Grid ColumnDefinitions="*,12,2*,12,150" Margin="0,0,0,10">
+                  <TextBlock Grid.Column="0" Text="{Binding SlotName}" VerticalAlignment="Center" />
+                  <ComboBox Grid.Column="2" ItemsSource="{Binding Options}" SelectedItem="{Binding Selected}"
+                            HorizontalAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate DataType="vm:SaWeaponOption">
+                        <TextBlock Text="{Binding Name}" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                  <NumericUpDown Grid.Column="4" Value="{Binding Ammo}" FormatString="0"
+                                 Minimum="0" Maximum="99999" Increment="10"
+                                 IsVisible="{Binding UsesAmmo}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="10">
+          <TextBlock Classes="SectionTitle" Text="Perks" />
+          <CheckBox Content="Infinite sprint (Paramedic level 12)" IsChecked="{Binding InfiniteSprint}" />
+          <CheckBox Content="Fast reload" IsChecked="{Binding FastReload}" />
+          <CheckBox Content="Fireproof (Firefighter level 12)" IsChecked="{Binding Fireproof}" />
+          <CheckBox Content="Get out of jail free" IsChecked="{Binding GetOutOfJailFree}" />
+          <CheckBox Content="Free health care" IsChecked="{Binding FreeHealthCare}" />
+          <CheckBox Content="Drive-by allowed" IsChecked="{Binding DriveByAllowed}" />
+          <Button Content="Unlock every perk" Command="{Binding AllPerksCommand}" Margin="0,6,0,0" />
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

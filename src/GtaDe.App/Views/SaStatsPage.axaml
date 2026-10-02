@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SaStatsPage"
+             x:DataType="vm:SaStatsPageViewModel">
+
+  <ScrollViewer>
+    <ItemsControl ItemsSource="{Binding Groups}" Margin="30,24">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <c:CardGrid />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="vm:NumberGroup">
+          <Border Classes="Card">
+            <StackPanel Spacing="14">
+              <TextBlock Classes="SectionTitle" Text="{Binding Name}" />
+              <TextBlock Classes="Subtle" Text="{Binding Note}" IsVisible="{Binding HasNote}" TextWrapping="Wrap" />
+              <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <c:CardGrid MinColumnWidth="340" MaxColumns="{Binding Columns}" Spacing="40" RowSpacing="0" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:EditableNumber">
+                    <Grid ColumnDefinitions="*,12,180" Margin="0,0,0,10">
+                      <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{Binding Label}" />
+                        <TextBlock Classes="Muted" FontSize="11.5" Text="{Binding Hint}"
+                                   IsVisible="{Binding HasHint}" TextWrapping="Wrap" />
+                      </StackPanel>
+                      <NumericUpDown Grid.Column="2" Value="{Binding Value}" FormatString="{Binding Format}"
+                                     Minimum="0" Maximum="999999999" Increment="{Binding Increment}" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
+</UserControl>

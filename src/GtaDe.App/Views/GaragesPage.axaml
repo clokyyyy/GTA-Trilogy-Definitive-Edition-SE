@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             x:Class="GtaDe.App.Views.GaragesPage"
+             x:DataType="vm:GaragesPageViewModel">
+
+  <DockPanel LastChildFill="True">
+
+    <Border DockPanel.Dock="Top" Padding="30,16"
+            BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1">
+      <Button Content="Deliver every vehicle" HorizontalAlignment="Left"
+              Command="{Binding DeliverAllCommand}" />
+    </Border>
+
+    <ScrollViewer>
+      <StackPanel Margin="30,20" Spacing="16">
+
+        <Border Classes="Card">
+          <StackPanel Spacing="14">
+            <TextBlock Classes="SectionTitle" Text="Garage services" />
+            <StackPanel Orientation="Horizontal" Spacing="30">
+              <CheckBox IsChecked="{Binding BombsAreFree}">
+                <StackPanel Spacing="1">
+                  <TextBlock Text="Car bombs are free" />
+                  <TextBlock Classes="Muted" FontSize="11" Text="Normally unlocked by a bomb shop mission" />
+                </StackPanel>
+              </CheckBox>
+              <CheckBox IsChecked="{Binding RespraysAreFree}">
+                <StackPanel Spacing="1">
+                  <TextBlock Text="Resprays are free" />
+                  <TextBlock Classes="Muted" FontSize="11" Text="Applies to every Pay 'n' Spray" />
+                </StackPanel>
+              </CheckBox>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="Card">
+          <StackPanel Spacing="14">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Grid.Column="0" Spacing="2">
+                <TextBlock Classes="SectionTitle" Text="Safehouse parking" />
+                <TextBlock Classes="Muted" FontSize="12" Text="{Binding ParkedCarsSummary}" />
+              </StackPanel>
+              <Button Grid.Column="1" Content="Remove selected car"
+                      Command="{Binding ClearSelectedCarCommand}" />
+            </Grid>
+
+            <ListBox ItemsSource="{Binding ParkedCars}"
+                     SelectedItem="{Binding SelectedParkedCar}"
+                     MaxHeight="220" Background="Transparent" BorderThickness="0"
+                     IsVisible="{Binding ParkedCars.Count}">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="vm:ParkedCarViewModel">
+                  <Grid ColumnDefinitions="160,*,160">
+                    <TextBlock Grid.Column="0" Text="{Binding Vehicle}" />
+                    <TextBlock Grid.Column="1" Classes="Muted" FontSize="12" Text="{Binding Location}" />
+                    <TextBlock Grid.Column="2" Classes="Mono" FontSize="11" Text="{Binding Position}" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </StackPanel>
+        </Border>
+
+        <ItemsControl ItemsSource="{Binding Garages}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:GarageViewModel">
+              <Border Classes="Card" Margin="0,0,0,16">
+                <StackPanel Spacing="14">
+
+                  <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="2">
+                      <TextBlock Classes="SectionTitle" Text="{Binding Name}" />
+                      <TextBlock Classes="Muted" FontSize="12" Text="{Binding Location}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4" Width="130">
+                      <TextBlock Classes="Mono" FontSize="12" HorizontalAlignment="Right"
+                                 Text="{Binding Summary}" />
+                      <ProgressBar Value="{Binding Progress}" Maximum="100" Height="4" />
+                    </StackPanel>
+                  </Grid>
+
+                  <ItemsControl ItemsSource="{Binding Slots}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="vm:ToggleItem">
+                        <CheckBox IsChecked="{Binding IsComplete}" Width="200" Margin="0,2">
+                          <StackPanel Spacing="1">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Classes="Muted" FontSize="11" Text="{Binding Detail}"
+                                       IsVisible="{Binding HasDetail}" />
+                          </StackPanel>
+                        </CheckBox>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </DockPanel>
+</UserControl>

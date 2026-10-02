@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.SaWorldPage"
+             x:DataType="vm:SaWorldPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Game clock" />
+          <TextBlock Classes="Muted" Text="{Binding Date}" />
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="Muted" Text="Hour" />
+              <NumericUpDown Value="{Binding Hour}" Minimum="0" Maximum="23" Increment="1"
+                             FormatString="00" Width="120" />
+            </StackPanel>
+            <StackPanel Spacing="4">
+              <TextBlock Classes="Muted" Text="Minute" />
+              <NumericUpDown Value="{Binding Minute}" Minimum="0" Maximum="59" Increment="1"
+                             FormatString="00" Width="120" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="SectionTitle" Text="Weather" />
+          <ComboBox ItemsSource="{Binding WeatherOptions}" SelectedItem="{Binding Weather}" Width="280">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="vm:SaWeatherOption">
+                <TextBlock Text="{Binding Name}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <CheckBox Content="Lock the weather to this setting" IsChecked="{Binding ForceWeather}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="SectionTitle" Text="Camera position" />
+          <TextBlock Classes="Mono" Text="{Binding CameraPosition}" />
+          <TextBlock Classes="Muted" FontSize="11.5" TextWrapping="Wrap"
+                     Text="Where the camera was when the game saved. CJ always restarts at the safehouse he saved in." />
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

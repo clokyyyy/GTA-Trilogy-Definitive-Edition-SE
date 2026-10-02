@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             xmlns:c="using:GtaDe.App.Controls"
+             x:Class="GtaDe.App.Views.PlayerPage"
+             x:DataType="vm:PlayerPageViewModel">
+
+  <ScrollViewer>
+    <c:CardGrid Margin="30,24">
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Money" />
+          <Grid ColumnDefinitions="*,12,Auto">
+            <NumericUpDown Grid.Column="0" Value="{Binding Money}"
+                           Minimum="-999999999" Maximum="999999999" Increment="1000"
+                           FormatString="N0" />
+            <Button Grid.Column="2" Content="Give $1,000,000" Command="{Binding GiveMillionCommand}" />
+          </Grid>
+          <TextBlock Classes="Subtle"
+                     Text="Written to both of the game's money fields so the HUD does not animate a change on load." />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Hidden packages" />
+          <Grid ColumnDefinitions="*,12,Auto">
+            <NumericUpDown Grid.Column="0" Value="{Binding HiddenPackages}"
+                           Minimum="0" Maximum="{Binding TotalHiddenPackages}" Increment="1"
+                           FormatString="0" />
+            <Button Grid.Column="2" Content="Collect all" Command="{Binding CollectAllPackagesCommand}" />
+          </Grid>
+          <TextBlock Classes="Subtle"
+                     Text="Changing the count also applies the four pickup bonuses at their usual thresholds, so the save matches what the game would have written itself." />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="SectionTitle" Text="Package bonuses" />
+          <CheckBox Content="Infinite sprint (10 packages)" IsChecked="{Binding InfiniteSprint}" />
+          <CheckBox Content="Fast reload (30 packages)" IsChecked="{Binding FastReload}" />
+          <CheckBox Content="Get out of jail free (50 packages)" IsChecked="{Binding GetOutOfJailFree}" />
+          <CheckBox Content="Free health care (70 packages)" IsChecked="{Binding FreeHealthCare}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <TextBlock Classes="SectionTitle" Text="Traffic" />
+          <StackPanel Spacing="6">
+            <TextBlock Classes="Muted" Text="Road density" />
+            <Grid ColumnDefinitions="*,12,60">
+              <Slider Grid.Column="0" Minimum="0" Maximum="4" TickFrequency="0.1"
+                      Value="{Binding RoadDensity}" />
+              <TextBlock Grid.Column="2" Classes="Mono" VerticalAlignment="Center"
+                         Text="{Binding RoadDensity, StringFormat={}{0:N2}}" />
+            </Grid>
+          </StackPanel>
+          <StackPanel Spacing="6">
+            <TextBlock Classes="Muted" Text="Traffic multiplier" />
+            <NumericUpDown Value="{Binding TrafficMultiplier}" Minimum="0" Maximum="65535"
+                           Increment="1" FormatString="0" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="Inset">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Health, armour and weapons" FontWeight="SemiBold" />
+          <TextBlock Classes="Subtle" TextWrapping="Wrap"
+                     Text="These are deliberately absent from this page. GTA III: Definitive Edition does not persist them — the bytes where they would live are zero in every save the game writes, and the script restores the player's loadout when the save is loaded." />
+        </StackPanel>
+      </Border>
+
+    </c:CardGrid>
+  </ScrollViewer>
+</UserControl>

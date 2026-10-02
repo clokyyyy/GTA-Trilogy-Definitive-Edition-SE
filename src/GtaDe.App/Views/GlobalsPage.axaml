@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GtaDe.App.ViewModels"
+             x:Class="GtaDe.App.Views.GlobalsPage"
+             x:DataType="vm:GlobalsPageViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="30,20">
+
+    <Grid Grid.Row="0" ColumnDefinitions="*,12,220" Margin="0,0,0,12">
+      <TextBox Grid.Column="0" Watermark="Search by name…" Text="{Binding Search}" />
+      <ComboBox Grid.Column="2" ItemsSource="{Binding Scopes}"
+                SelectedItem="{Binding SelectedScope}" HorizontalAlignment="Stretch" />
+    </Grid>
+
+    <Border Grid.Row="1" Classes="Card" Padding="0">
+      <DockPanel LastChildFill="True">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="2*,1.4*,90,90,1.2*" Margin="14,12,20,10">
+          <TextBlock Grid.Column="0" Classes="Muted" FontSize="11.5" Text="Name" />
+          <TextBlock Grid.Column="1" Classes="Muted" FontSize="11.5" Text="Scope" />
+          <TextBlock Grid.Column="2" Classes="Muted" FontSize="11.5" Text="Type" />
+          <TextBlock Grid.Column="3" Classes="Muted" FontSize="11.5" Text="Offset" />
+          <TextBlock Grid.Column="4" Classes="Muted" FontSize="11.5" Text="Value" />
+        </Grid>
+        <ListBox ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}"
+                 Background="Transparent" BorderThickness="0">
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="vm:GlobalRow">
+              <Grid ColumnDefinitions="2*,1.4*,90,90,1.2*">
+                <TextBlock Grid.Column="0" Classes="Mono" Text="{Binding Name}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="1" Classes="Muted" FontSize="12" Text="{Binding Scope}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="2" Classes="Muted" FontSize="12" Text="{Binding Type}" />
+                <TextBlock Grid.Column="3" Classes="Muted" FontSize="12" Text="{Binding Offset}" />
+                <TextBlock Grid.Column="4" Classes="Mono" Text="{Binding Value}"
+                           TextTrimming="CharacterEllipsis" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <StackPanel Grid.Row="2" Spacing="10" Margin="0,12,0,0">
+      <TextBlock Classes="Muted" FontSize="12" Text="{Binding ResultSummary}" />
+      <Grid ColumnDefinitions="*,12,160,12,Auto">
+        <TextBox Grid.Column="0" Text="{Binding EditValue}"
+                 Watermark="Select a variable above, then type a new value" />
+        <CheckBox Grid.Column="2" Content="Treat as float" IsChecked="{Binding EditAsFloat}"
+                  VerticalAlignment="Center" />
+        <Button Grid.Column="4" Classes="Accent" Content="Apply"
+                Command="{Binding ApplyCommand}" />
+      </Grid>
+    </StackPanel>
+
+  </Grid>
+</UserControl>
