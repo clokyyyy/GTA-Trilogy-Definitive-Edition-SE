@@ -2,7 +2,7 @@
 
 A native Windows save editor for *GTA III*, *Vice City* and *San Andreas – The Definitive Edition*
 (the Unreal Engine remasters), built on .NET 9 and Avalonia. No Electron, no browser engine: it
-starts instantly and draws its own light or dark themed UI.
+starts instantly and supports both light and dark theme.
 
 ## Requirements
 
