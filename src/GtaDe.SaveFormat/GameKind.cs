@@ -8,28 +8,26 @@ public enum GameKind
     SanAndreas,
 }
 
-/// <summary>Identifies which game wrote a save from the version number in its header.</summary>
+/// <summary>Identifies the game by validated structure; known revisions are only hints.</summary>
 public static class GameDetection
 {
     public const uint Gta3Version = 16;
     public const uint ViceCityVersion = 11;
     public const uint SanAndreasVersion = 33;
+    public const uint SanAndreasNewVersion = 41;
 
     public static GameKind? FromVersion(uint version) => version switch
     {
         Gta3Version => GameKind.Gta3,
         ViceCityVersion => GameKind.ViceCity,
-        SanAndreasVersion => GameKind.SanAndreas,
+        SanAndreasVersion or SanAndreasNewVersion => GameKind.SanAndreas,
         _ => null,
     };
 
-    /// <summary>Reads the header of <paramref name="data"/> and reports the game, or throws if unknown.</summary>
+    /// <summary>Validates <paramref name="data"/> and reports its game, or throws if the layout is unverified.</summary>
     public static GameKind Detect(byte[] data)
     {
-        var header = SaveHeader.Read(data);
-        return FromVersion(header.Version)
-            ?? throw new SaveFormatException(
-                $"Save format version {header.Version} is not a GTA III, Vice City or San Andreas Definitive Edition save.");
+        return SaveCompatibility.Read(data).Layout.Game;
     }
 
     public static string DisplayName(this GameKind game) => game switch

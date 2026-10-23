@@ -54,6 +54,8 @@ public abstract class DeSaveFile
     /// <summary>Whether the seal matched when the file was loaded.</summary>
     public bool SealWasValid { get; }
 
+    public bool IsUntestedRevision => GameDetection.FromVersion(Layout.Header.Version) != Game;
+
     /// <summary>GXT key of the last mission passed, shown by the game in the load menu.</summary>
     public string LastMissionKey => Layout.Header.LastMissionKey;
 
@@ -62,7 +64,7 @@ public abstract class DeSaveFile
     /// <summary>True when the buffer differs from the file as it was loaded.</summary>
     public bool IsModified => !Data.AsSpan().SequenceEqual(OriginalBytes);
 
-    /// <summary>Loads a save of any supported game, detecting which one from its header.</summary>
+    /// <summary>Loads a save of any supported game, detecting which one from its validated structure.</summary>
     public static DeSaveFile Load(string path)
     {
         var save = Parse(File.ReadAllBytes(path));
@@ -70,36 +72,30 @@ public abstract class DeSaveFile
         return save;
     }
 
-    /// <summary>Parses a save of any supported game, detecting which one from its header.</summary>
-    public static DeSaveFile Parse(byte[] data) => GameDetection.Detect(data) switch
+    /// <summary>Parses a save of any supported game, detecting which one from its validated structure.</summary>
+    public static DeSaveFile Parse(byte[] data)
     {
-        GameKind.Gta3 => Gta3SaveFile.Parse(data),
-        GameKind.ViceCity => ViceCitySaveFile.Parse(data),
-        GameKind.SanAndreas => SanAndreasSaveFile.Parse(data),
-        var other => throw new SaveFormatException(
-            $"{other.DisplayName()} Definitive Edition saves are not supported yet."),
-    };
+        var parts = SaveCompatibility.Read(data);
+        return parts.Layout.Game switch
+        {
+            GameKind.Gta3 => new Gta3SaveFile(parts),
+            GameKind.ViceCity => new ViceCitySaveFile(parts),
+            GameKind.SanAndreas => new SanAndreasSaveFile(parts),
+            _ => throw new SaveFormatException("The save's game could not be identified."),
+        };
+    }
 
     /// <summary>Splits a raw file into the parts every game shares, validating as it goes.</summary>
     protected static SaveParts ParseParts(byte[] data, GameKind expected)
     {
-        var buffer = (byte[])data.Clone();
-
-        var game = GameDetection.Detect(buffer);
-        if (game != expected)
+        var parts = SaveCompatibility.Read(data);
+        if (parts.Layout.Game != expected)
         {
             throw new SaveFormatException(
-                $"This is a {game.DisplayName()} save, not a {expected.DisplayName()} save.");
+                $"This is a {parts.Layout.Game.DisplayName()} save, not a {expected.DisplayName()} save.");
         }
 
-        var detected = SaveSeal.Detect(buffer);
-        var sealVariant = detected ?? (game == GameKind.Gta3 ? SealVariant.Inverted : SealVariant.Plain);
-
-        var layout = SaveLayout.Read(buffer, game);
-        var symbols = ScriptSymbolTable.Parse(layout.Metadata.GetPayloadText());
-        var globals = GlobalVariableSpace.Create(buffer, layout[SaveBlockKind.Scripts], symbols);
-
-        return new SaveParts(buffer, layout, symbols, globals, sealVariant, detected is not null);
+        return parts;
     }
 
     /// <summary>Discards every edit, restoring the buffer to the bytes that were loaded.</summary>

@@ -98,6 +98,10 @@ public sealed class CompressedContainer
         {
             var record = ReadRecord(data, cursor);
             var blockStart = cursor + record.HeaderSize;
+            if (payload.Length + record.DecompressedSize > MaxDecompressedBytes)
+            {
+                throw new SaveFormatException("The decompressed metadata exceeds the supported 64 MiB limit.");
+            }
 
             foreach (var (compressed, decompressed) in record.Blocks)
             {
@@ -131,13 +135,13 @@ public sealed class CompressedContainer
         var compressedSize = ByteOps.ReadInt64(data, offset + 16);
         var decompressedSize = ByteOps.ReadInt64(data, offset + 24);
 
-        if (blockSize <= 0 || compressedSize < 0 || decompressedSize < 0
+        if (blockSize <= 0 || blockSize > MaxDecompressedBytes || compressedSize < 0 || decompressedSize < 0
             || decompressedSize > MaxDecompressedBytes || compressedSize > data.Length)
         {
             throw new SaveFormatException($"Compression record at 0x{offset:X} has implausible sizes.");
         }
 
-        var blockCount = (int)((decompressedSize + blockSize - 1) / blockSize);
+        var blockCount = decompressedSize == 0 ? 0 : (int)(1 + ((decompressedSize - 1) / blockSize));
         var entriesStart = offset + CompressedRecord.SummarySize;
         if ((long)entriesStart + ((long)blockCount * CompressedRecord.BlockEntrySize) > data.Length)
         {
@@ -179,7 +183,7 @@ public sealed class CompressedContainer
             Blocks = blocks,
         };
 
-        if (offset + record.TotalSize > data.Length)
+        if ((long)offset + record.HeaderSize + compressedSize > data.Length)
         {
             throw new SaveFormatException(
                 $"Compression record at 0x{offset:X} claims {record.TotalSize} bytes but the file is too short.");
@@ -213,12 +217,16 @@ public sealed class CompressedContainer
     {
         if (Decompressed.Length < 4)
         {
-            return string.Empty;
+            throw new SaveFormatException("The script metadata is missing its text-length prefix.");
         }
 
         var declared = ByteOps.ReadInt32(Decompressed, 0);
         var available = Decompressed.Length - 4;
-        var length = declared >= 0 && declared <= available ? declared : available;
-        return Encoding.Latin1.GetString(Decompressed, 4, length);
+        if (declared < 0 || declared != available)
+        {
+            throw new SaveFormatException("The script metadata text length does not match its payload.");
+        }
+
+        return Encoding.Latin1.GetString(Decompressed, 4, declared);
     }
 }

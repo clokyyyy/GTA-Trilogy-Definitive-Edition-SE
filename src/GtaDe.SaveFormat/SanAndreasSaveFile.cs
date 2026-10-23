@@ -5,7 +5,7 @@ namespace GtaDe.SaveFormat;
 /// </summary>
 public sealed class SanAndreasSaveFile : DeSaveFile
 {
-    private SanAndreasSaveFile(SaveParts parts)
+    internal SanAndreasSaveFile(SaveParts parts)
         : base(parts)
     {
         SimpleVars = new SanAndreasSimpleVars(Data, Layout[SaveBlockKind.SimpleVariables]);

@@ -2,7 +2,7 @@
 
 A native Windows save editor for *GTA III*, *Vice City* and *San Andreas – The Definitive Edition*
 (the Unreal Engine remasters), built on .NET 9 and Avalonia. No Electron, no browser engine: it
-starts instantly and supports both light and dark theme.
+starts instantly and draws its own light or dark themed UI.
 
 ## Requirements
 
@@ -37,6 +37,29 @@ The editor finds the folder for the selected game on its own when you click **Op
 recognises which game a file belongs to from its contents.
 
 Only one copy of the editor runs at a time: launching the exe again while it is open does nothing.
+
+### Save revisions and future updates
+
+The editor identifies GTA III, Vice City and San Andreas Definitive Edition saves by their
+structure, not just a list of version numbers. **A new revision number alone does not prevent
+opening or editing a save.** Compatible revisions use the existing validated layout family.
+
+- Real-save regression fixtures cover GTA III revision **16**, Vice City **11**, and
+  San Andreas **33 and 41**. San Andreas 41 includes additional `SEARCHLIGHTS` data, which is
+  preserved without editing.
+- Other revisions are accepted only if one game's layout matches unambiguously, its checksum
+  verifies, and its editable sections and script-variable offsets pass validation. The status
+  bar identifies an accepted, untested revision and recommends keeping a backup.
+- The original revision, compressed metadata, checksum style and unrelated bytes are preserved.
+  The editor does not convert a newer save to an older revision.
+- An update that changes field layouts, required section sizes or the checksum algorithm may
+  still need an editor update. Such saves are refused with an explanation rather than edited
+  using guessed offsets. Structural checks cannot prove that every future field has the same
+  meaning, so automatic compatibility is not a guarantee of in-game behavior.
+- Files larger than 32 MiB or metadata expanding beyond 64 MiB are refused to keep parsing bounded.
+
+Keep a separate backup and test an edited copy in another slot before relying on it.
+Automated parse, checksum and round-trip tests do not replace an in-game load test.
 
 The editor remembers the last save you opened for each game. It reopens that save when it starts
 and when you switch games with the profile switcher, and asks first if switching would throw away
@@ -126,7 +149,8 @@ changes, so writing a guess would produce a save the game disagrees with.
 
 - The save is held as **one mutable byte array and edited in place**. Regions the editor does not
   understand are copied through untouched, so an unmodified save round-trips byte-for-byte.
-- The file's integrity seal (`NOT(MD5(zeros(24) || file[24:]))`) is recomputed on write. A save with
+- The file's integrity seal (`MD5(zeros(24) || file[24:])`, stored plain or byte-inverted) is
+  detected on load and recomputed in the same form on write. A save with
   a bad seal shows up as an **empty slot** in the load menu, so this has to be exact.
 - The script-global base offset is verified against three compiler constants
   (`ONE_SIXTEENTH`, `ONE_THIRTYSECOND`, `ONE_SIXTYFOURTH`) on every load, and loading **fails** if
@@ -134,11 +158,11 @@ changes, so writing a guess would produce a save the game disagrees with.
   check is what catches that.
 - A **`.bak` copy of the original** is written before the first change, and is never overwritten,
   so editing and re-testing repeatedly cannot destroy the pristine file.
-- Writes go to a `.tmp` file first and are then moved into place.
+- Writes go to a `.tmp` file first; an existing destination is replaced atomically.
 
 ## Validating an edit in-game
 
-1. Quit GTA III DE completely.
+1. Quit the selected Definitive Edition game completely.
 2. Open the save, change something obvious — money is easiest — and click **Save**.
 3. Start the game and load that slot.
 4. Check the value, then quit again.

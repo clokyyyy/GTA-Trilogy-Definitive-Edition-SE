@@ -66,13 +66,27 @@ public sealed class GlobalVariableSpace
             throw new ArgumentException("A Scripts block is required.", nameof(scripts));
         }
 
+        if (scripts.DataLength < GlobalsRelativeOffset)
+        {
+            throw new SaveFormatException("The Scripts block is too short for its variable-space header.");
+        }
+
         var declaredSize = (int)ByteOps.ReadUInt32(data, scripts.DataOffset);
         var baseOffset = scripts.DataOffset + GlobalsRelativeOffset;
 
-        if (declaredSize < 0 || baseOffset + declaredSize > data.Length)
+        if (declaredSize < OpaqueHeaderLength || declaredSize > scripts.EndOffset - baseOffset)
         {
             throw new SaveFormatException(
-                $"The Scripts block declares a {declaredSize} byte variable space that does not fit in the file.");
+                $"The Scripts block declares a {declaredSize} byte variable space that does not fit in its section.");
+        }
+
+        foreach (var global in symbols.Globals)
+        {
+            if (global.Index < 0 || global.Index % 4 != 0 || global.ArrayCount < 1 ||
+                (long)global.Index + ((long)global.ArrayCount * 4) > declaredSize - OpaqueHeaderLength)
+            {
+                throw new SaveFormatException($"The symbol {global.QualifiedName} lies outside the declared variable space.");
+            }
         }
 
         var space = new GlobalVariableSpace(data, symbols, baseOffset, declaredSize);
@@ -102,7 +116,7 @@ public sealed class GlobalVariableSpace
 
             checkedAny = true;
             var actual = ByteOps.ReadSingle(_data, BaseOffset + global.Index);
-            if (Math.Abs(actual - expected) > 1e-9f)
+            if (!float.IsFinite(actual) || Math.Abs(actual - expected) > 1e-9f)
             {
                 throw new SaveFormatException(
                     $"Script global base check failed: expected {name} to be {expected} but read {actual}. " +
@@ -136,13 +150,13 @@ public sealed class GlobalVariableSpace
                 $"{global.QualifiedName} has {global.ArrayCount} element(s).");
         }
 
-        var offset = BaseOffset + global.Index + (element * 4);
-        if (offset + 4 > _data.Length)
+        var relative = (long)global.Index + ((long)element * 4);
+        if (relative < 0 || relative + 4 > Size - OpaqueHeaderLength)
         {
-            throw new SaveFormatException($"{global.QualifiedName} lies outside the save file.");
+            throw new SaveFormatException($"{global.QualifiedName} lies outside the declared variable space.");
         }
 
-        return offset;
+        return BaseOffset + (int)relative;
     }
 
     public int GetInt(ScriptGlobal global, int element = 0) => ByteOps.ReadInt32(_data, OffsetOf(global, element));

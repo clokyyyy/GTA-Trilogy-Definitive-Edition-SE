@@ -5,7 +5,7 @@
 /// </summary>
 public sealed class Gta3SaveFile : DeSaveFile
 {
-    private Gta3SaveFile(SaveParts parts)
+    internal Gta3SaveFile(SaveParts parts)
         : base(parts)
     {
         SimpleVars = new SimpleVars(Data, Layout.SimpleVarsOffset);

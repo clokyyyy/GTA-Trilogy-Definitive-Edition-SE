@@ -5,7 +5,7 @@ namespace GtaDe.SaveFormat;
 /// </summary>
 public sealed class ViceCitySaveFile : DeSaveFile
 {
-    private ViceCitySaveFile(SaveParts parts)
+    internal ViceCitySaveFile(SaveParts parts)
         : base(parts)
     {
         SimpleVars = new ViceCitySimpleVars(Data, Layout.SimpleVarsOffset);

@@ -97,6 +97,22 @@ public sealed class SaveHeader
             throw new SaveFormatException($"Implausible last-mission key length {keyLength}.");
         }
 
+        if (ByteOps.ReadUInt32(data, VersionOffset) != ByteOps.ReadUInt32(data, VersionRepeatOffset))
+        {
+            throw new SaveFormatException("The Definitive Edition header contains mismatched format revisions.");
+        }
+
+        if (data[LastMissionOffset + keyLength - 1] != 0)
+        {
+            throw new SaveFormatException("The last-mission key is not NUL-terminated.");
+        }
+
+        var ticks = ByteOps.ReadInt64(data, TimestampOffset);
+        if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
+        {
+            throw new SaveFormatException("The save timestamp is outside the supported date range.");
+        }
+
         return new SaveHeader(data, LastMissionOffset + keyLength);
     }
 }

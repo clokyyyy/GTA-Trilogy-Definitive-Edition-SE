@@ -68,6 +68,9 @@ public enum SaveBlockKind
 
     /// <summary>San Andreas: the mission brief history.</summary>
     Briefs,
+
+    /// <summary>San Andreas: additional searchlight state, preserved without edits.</summary>
+    Searchlights,
 }
 
 /// <summary>
@@ -326,8 +329,8 @@ public sealed class SaveLayout
 
     public bool TryGetBlock(SaveBlockKind kind, out SaveBlock block) => _blocks.TryGetValue(kind, out block);
 
-    /// <summary>Reads the layout, choosing the game from the header version.</summary>
-    public static SaveLayout Read(byte[] data) => Read(data, GameDetection.Detect(data));
+    /// <summary>Reads the layout after identifying and validating its structural family.</summary>
+    public static SaveLayout Read(byte[] data) => SaveCompatibility.Read(data).Layout;
 
     public static SaveLayout Read(byte[] data, GameKind game)
     {
@@ -341,13 +344,17 @@ public sealed class SaveLayout
 
         var simpleVarsOffset = header.Length;
         var metadataLengthOffset = simpleVarsOffset + spec.SimpleVarsLength;
-        if (metadataLengthOffset + 4 > data.Length)
+        if (metadataLengthOffset > data.Length - 4)
         {
             throw new SaveFormatException("The file ends before the metadata length field.");
         }
 
         var metadataLength = (int)ByteOps.ReadUInt32(data, metadataLengthOffset);
         var metadataOffset = metadataLengthOffset + 4;
+        if (metadataLength <= 0 || metadataLength > data.Length - metadataOffset)
+        {
+            throw new SaveFormatException("The declared metadata length does not fit in the file.");
+        }
         var metadata = CompressedContainer.Read(data, metadataOffset);
 
         if (metadata.Length != metadataLength)
@@ -432,6 +439,11 @@ public sealed class SaveLayout
             cursor = dataOffset;
         }
 
+        if (FindNamedBlock(data, cursor, "SEARCHLIGHTS") is { } searchlights)
+        {
+            located.Add((SaveBlockKind.Searchlights, "SEARCHLIGHTS", searchlights, searchlights + 17));
+        }
+
         var blocks = new Dictionary<SaveBlockKind, SaveBlock>();
         var ordered = new List<SaveBlock>();
         for (var i = 0; i < located.Count; i++)
@@ -499,7 +511,7 @@ public sealed class SaveLayout
     /// <summary>Reads a block that starts with its own four-character tag and size.</summary>
     private static SaveBlock ReadTaggedBlock(byte[] data, int offset, SaveBlockKind kind, SaveLayoutSpec spec)
     {
-        if (offset + 8 > data.Length)
+        if (offset < 0 || offset > data.Length - 8)
         {
             throw new SaveFormatException($"The file ends before the {kind} block header.");
         }
@@ -509,7 +521,7 @@ public sealed class SaveLayout
         ValidateTag(kind, tag, offset, spec);
 
         var size = (int)ByteOps.ReadUInt32(data, offset + 4);
-        if (size < 0 || offset + 8 + size > data.Length)
+        if (size < 0 || size > data.Length - offset - 8)
         {
             throw new SaveFormatException($"The {kind} block at 0x{offset:X} declares an impossible size {size}.");
         }
@@ -524,14 +536,14 @@ public sealed class SaveLayout
     /// </summary>
     private static SaveBlock ReadSizePrefixedBlock(byte[] data, int offset, SaveBlockKind kind, SaveLayoutSpec spec)
     {
-        if (offset + 4 > data.Length)
+        if (offset < 0 || offset > data.Length - 4)
         {
             throw new SaveFormatException($"The file ends before the {kind} block size.");
         }
 
         var outerSize = (int)ByteOps.ReadUInt32(data, offset);
         var payloadOffset = offset + 4;
-        if (outerSize < 0 || payloadOffset + outerSize > data.Length)
+        if (outerSize < 0 || outerSize > data.Length - payloadOffset)
         {
             throw new SaveFormatException(
                 $"The {kind} block at 0x{offset:X} declares an impossible size {outerSize}.");
