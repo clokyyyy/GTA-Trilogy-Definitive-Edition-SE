@@ -460,6 +460,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
             var warning = loaded.SealWasValid
                 ? string.Empty
                 : "  Warning: this file's integrity value did not match, so it may already have been edited by another tool.";
+            if (loaded.IsUntestedRevision)
+            {
+                warning += $"  Untested revision {loaded.Layout.Header.Version}: checksum and layout checks passed. Keep a backup.";
+            }
 
             var verb = reopened ? "Reopened" : "Loaded";
             SetStatus($"{verb} {Path.GetFileName(path)}.{warning}", !loaded.SealWasValid);
